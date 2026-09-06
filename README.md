@@ -63,3 +63,18 @@ $fillable est une liste blanche : seuls les champs listés (nom, batiment, capac
 
 4. Pourquoi convertir les dates en objets ?
 Sans cast, $reservation->date_debut serait une simple chaîne de caractères ("2026-09-10 10:00:00"), sur laquelle tu ne peux rien faire de pratique — pas de comparaison propre, pas de calcul de durée. Avec 'date_debut' => 'datetime', Eloquent te retourne un objet Carbon (une extension de DateTimeImmutable/DateTime), qui permet :
+## reponse 4
+1. Migration vs Seeder (confirmé)
+Exactement : la migration s'occupe de la structure (créer/modifier des tables, colonnes, contraintes) — c'est le "squelette" de la base. Le seeder s'occupe des données à l'intérieur de tables déjà existantes — c'est le "contenu". On pourrait résumer : migration = CREATE TABLE, seeder = INSERT INTO. Les deux sont complémentaires et souvent utilisées dans cet ordre (d'abord migrer, puis seeder).
+
+3. Empêcher les doublons (confirmé)
+Très bonne synthèse, et tu as raison de mentionner l'alternative : on pourrait aussi mettre une contrainte UNIQUE sur la colonne nom directement en base (ALTER TABLE salles ADD UNIQUE (nom)), ce qui empêcherait MySQL lui-même d'accepter un doublon (et lancerait une exception si on essayait). C'est une protection complémentaire, pas exclusive : firstOrCreate() évite déjà le problème au niveau applicatif, et une contrainte UNIQUE protégerait même si quelqu'un insérait des données autrement (script SQL direct, autre appli). Dans un vrai projet, on combine souvent les deux — mais pour ce projet pédagogique, firstOrCreate() suffit.
+
+2. Pourquoi les données initiales doivent-elles être reproductibles ?
+Voici l'explication : le script de seed sert à donner à l'application un état de départ cohérent et connu, exploitable par n'importe qui, n'importe quand. Concrètement :
+
+Nouveau développeur / nouvelle machine : quand ton collègue (ou toi sur un autre PC) clone le dépôt, la base est vide. Le seed lui permet de retrouver immédiatement les mêmes 5 salles que toi, sans avoir à les saisir à la main.
+Tests automatisés : à l'Étape 12, les tests d'intégration ont besoin de données prévisibles pour vérifier des comportements (ex: "la réservation de la Salle B12 doit être refusée si elle chevauche une réservation existante"). Si les données changent à chaque exécution, les tests deviendraient instables (parfois ils passent, parfois non).
+Démonstration / recette : à l'Étape 11 (scénarios de recette), on teste avec "Salle B12" — il faut que cette salle existe de façon garantie dans n'importe quel environnement (dev, recette, prod de test).
+
+Si le seed n'était pas reproductible (donc s'il créait des doublons à chaque exécution), relancer le script deviendrait dangereux — on ne pourrait le lancer qu'une seule fois, ce qui est fragile et source d'erreurs humaines (quelqu'un l'exécute deux fois par mégarde → base polluée).
