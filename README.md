@@ -78,3 +78,37 @@ Tests automatisés : à l'Étape 12, les tests d'intégration ont besoin de donn
 Démonstration / recette : à l'Étape 11 (scénarios de recette), on teste avec "Salle B12" — il faut que cette salle existe de façon garantie dans n'importe quel environnement (dev, recette, prod de test).
 
 Si le seed n'était pas reproductible (donc s'il créait des doublons à chaque exécution), relancer le script deviendrait dangereux — on ne pourrait le lancer qu'une seule fois, ce qui est fragile et source d'erreurs humaines (quelqu'un l'exécute deux fois par mégarde → base polluée).
+
+## Reponse 5
+
+4. Comment retourner plusieurs erreurs en une seule fois ? (précision)
+Tu as raison sur l'usage d'assert(), mais précisons le mécanisme exact : dans notre code, chaque règle (nom, batiment, capacite...) est vérifiée séparément, dans une boucle foreach, avec son propre try/catch. Donc même si le champ nom échoue, la boucle continue vers batiment, capacite, etc. — chaque échec est capturé indépendamment et ajouté au tableau $errors[$champ].
+
+La nuance assert() vs check() que tu mentionnes est juste, mais elle s'applique à l'intérieur d'une seule règle : si une règle combine plusieurs contraintes (ex: v::stringType()->length(2, 100)), assert() va lister toutes les sous-erreurs de cette règle composée (via getMessages() qui retourne un tableau), alors que check() s'arrêterait à la toute première sous-contrainte violée. C'est pour ça qu'on utilise assert() + catch plutôt que check(), combiné à notre boucle foreach qui elle gère le "plusieurs champs en erreur en même temps".
+
+2. Pourquoi créer une interface de validation ? (bonne intuition, à élargir)
+Ton raisonnement sur Open/Closed est valide dans l'esprit (on peut ajouter de nouveaux validateurs sans modifier le code existant), mais la raison principale ici, c'est plutôt le principe Liskov / Dependency Inversion (2 des 5 principes SOLID que tu devras documenter dans ARCHITECTURE.md) :
+
+Substituabilité : n'importe quelle classe qui dépend d'un ValidatorInterface (ex: un contrôleur) peut recevoir indifféremment un SalleValidator ou un ReservationValidator — le code appelant n'a pas besoin de savoir lequel exactement, il appelle juste ->validate($data).
+Testabilité : en test unitaire, tu pourrais créer un FauxValidator implements ValidatorInterface qui retourne toujours isValid() === true, pour tester ton contrôleur sans dépendre de la vraie logique de validation.
+Découplage : le contrôleur dépend d'un contrat (l'interface), pas d'une implémentation concrète — si demain tu changes Respect\Validation pour une autre librairie, tu réécris seulement les classes concrètes, sans toucher aux contrôleurs.
+
+3. Pourquoi le validateur ne doit-il pas enregistrer les données ? (à corriger)
+Ta réponse mélange un peu deux étapes différentes (Validation à l'Étape 5, DTO à l'Étape 6) — c'est normal, elles sont liées, mais la vraie raison ici est le principe de responsabilité unique (Single Responsibility Principle, encore SOLID) :
+
+Le rôle du validateur est de répondre à une seule question : "ces données respectent-elles le format attendu ?" — rien de plus.
+S'il enregistrait aussi les données (Salle::create($data)), il porterait deux responsabilités mélangées : valider ET persister. Résultat : impossible de tester la validation seule sans toucher la base de données ; impossible de réutiliser le validateur dans un contexte où on ne veut pas encore sauvegarder (ex: validation en amont d'un DTO, comme tu l'as bien remarqué) ; et si demain la logique de sauvegarde change (ajout d'un log, d'une notification), il faudrait modifier une classe qui n'a rien à voir avec la validation.
+Le sujet confirme cette séparation stricte des couches : Validator → DTO → Service → Repository, chacun avec une seule responsabilité claire.
+
+1. Pourquoi séparer la validation syntaxique des règles métier ?
+La différence entre les deux :
+
+Validation syntaxique (ce qu'on fait à l'Étape 5) : "est-ce que email a la forme d'un email ?", "est-ce que motif fait entre 5 et 255 caractères ?" — des règles indépendantes du contexte métier, qui ne changent jamais selon la situation.
+Règle métier (ce qu'on fera à l'Étape 8, dans CreerReservationService) : "est-ce que date_debut < date_fin ?", "est-ce que la salle est déjà réservée sur ce créneau ?" — des règles qui dépendent de l'état de l'application (d'autres réservations existantes, de la salle en question) et qui peuvent évoluer avec les besoins métier.
+
+Pourquoi séparer ? Parce que ces deux types de vérifications ont des cycles de vie et des dépendances différents :
+
+La validation syntaxique ne nécessite aucun accès à la base de données — elle peut être testée avec juste un tableau de données en entrée.
+La règle métier nécessite d'interroger la base (chercher les réservations existantes via le Repository) — elle ne peut pas être testée sans ce contexte.
+
+Si on mélangeait les deux dans le validateur, on rendrait le validateur dépendant du Repository/de la base de données — cassant sa simplicité et sa testabilité (rappel de la contrainte du sujet : "les tests unitaires des services ne doivent pas nécessiter MySQL", ce qui n'est possible que si la logique métier est bien isolée du reste).
