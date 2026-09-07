@@ -28,7 +28,11 @@ require dirname(__DIR__)  . '/config/database.php';
 // echo "Modifiée le : " . $salle->updated_at . "\n"; // change !
 
 use App\Validation\ReservationValidator;
-
+use App\DTO\CreerReservationDTO;
+use App\Service\CreerReservationService;
+use App\Repository\ReservationRepositoryInterface;
+use App\Repository\SalleRepositoryInterface;
+// public ReservationRepositoryInterface $reservation;
 $validator = new ReservationValidator();
 $resultat = $validator->validate([
     'salle_id' => 1,
@@ -39,10 +43,13 @@ $resultat = $validator->validate([
     'date_fin' => '2026-09-10',
 ]);
 
-var_dump($resultat->isValid()); // false
-print_r($resultat->errors());  // erreurs sur 'email' et 'motif'
+// var_dump($resultat->isValid()); // false
+// print_r($resultat->errors());  // erreurs sur 'email' et 'motif'
+// if($resultat->isValid()){
+// $dto=CreerReservationDTO::depuisTableau($resultat);
 
-if(empty($resultat->errors())){
-var_dump($resultat->data()); // false
 
-}
+// $service=new CreerReservationService(ReservationRepositoryInterface::$reservation,SalleRepositoryInterface::$salle);
+// $service->creer($dto);
+// var_dump($service);
+// }
