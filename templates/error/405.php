@@ -1,0 +1,1 @@
+<h1>405 — Méthode non autorisée</h1>

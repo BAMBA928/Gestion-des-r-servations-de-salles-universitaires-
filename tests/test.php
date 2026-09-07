@@ -43,13 +43,13 @@ $resultat = $validator->validate([
     'date_fin' => '2026-09-10',
 ]);
 
-// var_dump($resultat->isValid()); // false
-// print_r($resultat->errors());  // erreurs sur 'email' et 'motif'
-// if($resultat->isValid()){
-// $dto=CreerReservationDTO::depuisTableau($resultat);
+var_dump($resultat->isValid()); // false
+print_r($resultat->errors());  // erreurs sur 'email' et 'motif'
+if($resultat->isValid()){
+$dto=CreerReservationDTO::depuisTableau($resultat->data());
 
 
 // $service=new CreerReservationService(ReservationRepositoryInterface::$reservation,SalleRepositoryInterface::$salle);
 // $service->creer($dto);
 // var_dump($service);
-// }
+}
