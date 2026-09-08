@@ -6,7 +6,7 @@ namespace App\DTO;
 
 final class CreerSalleDTO
 {
-    public function __construct(
+    private function __construct(
         public readonly string $nom,
         public readonly string $batiment,
         public readonly int $capacite,

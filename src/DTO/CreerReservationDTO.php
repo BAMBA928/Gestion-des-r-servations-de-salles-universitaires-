@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
+use DateTimeImmutable;
 
-readonly final class CreerReservationDTO
+final class CreerReservationDTO
 {
-    public function __construct(
-        public  int $salleId,
-        public  string $responsable,
-        public  string $email,
-        public  string $motif,
-        public  \DateTimeImmutable $dateDebut,
-        public  \DateTimeImmutable $dateFin,
+    private function __construct(
+        public readonly int $salleId,
+        public readonly string $responsable,
+        public readonly string $email,
+        public readonly string $motif,
+        public readonly DateTimeImmutable $dateDebut,
+        public readonly DateTimeImmutable $dateFin,
     ) {
     }
 
@@ -24,8 +25,12 @@ readonly final class CreerReservationDTO
             responsable: $data['responsable'],
             email: $data['email'],
             motif: $data['motif'],
-            dateDebut: new \DateTimeImmutable($data['date_debut']),
-            dateFin: new \DateTimeImmutable($data['date_fin']),
+            dateDebut: $data['date_debut'] instanceof DateTimeImmutable
+                ? $data['date_debut']
+                : new DateTimeImmutable($data['date_debut']),
+            dateFin: $data['date_fin'] instanceof DateTimeImmutable
+                ? $data['date_fin']
+                : new DateTimeImmutable($data['date_fin']),
         );
     }
 }
