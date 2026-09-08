@@ -25,11 +25,9 @@ use function DI\factory;
 use function FastRoute\simpleDispatcher;
 
 return [
-    // Interfaces -> implémentations concrètes
     SalleRepositoryInterface::class => autowire(EloquentSalleRepository::class),
     ReservationRepositoryInterface::class => autowire(EloquentReservationRepository::class),
 
-    // Classes concrètes simples -> autowiring automatique
     SalleValidator::class => autowire(),
     ReservationValidator::class => autowire(),
     CreerReservationService::class => autowire(),
