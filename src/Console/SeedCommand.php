@@ -6,10 +6,14 @@ namespace App\Console;
 
 use App\Model\Salle;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Dotenv\Dotenv;
 
 final class SeedCommand implements CommandInterface
 {
+    public function __construct(
+        private Capsule $capsule,
+    ) {
+    }
+
     public function nom(): string
     {
         return 'seed';
@@ -17,23 +21,6 @@ final class SeedCommand implements CommandInterface
 
     public function executer(array $arguments): void
     {
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__, 2));
-        $dotenv->load();
-
-        $capsule = new Capsule();
-        $capsule->addConnection([
-            'driver'    => $_ENV['DB_DRIVER'],
-            'host'      => $_ENV['DB_HOST'],
-            'port'      => $_ENV['DB_PORT'],
-            'database'  => $_ENV['DB_DATABASE'],
-            'username'  => $_ENV['DB_USERNAME'],
-            'password'  => $_ENV['DB_PASSWORD'],
-            'charset'   => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-        ]);
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
-
         $salles = [
             ['nom' => 'Amphithéâtre A', 'batiment' => 'Bloc A', 'capacite' => 250, 'type' => 'amphitheatre', 'active' => true],
             ['nom' => 'Salle B12', 'batiment' => 'Bloc B', 'capacite' => 40, 'type' => 'cours', 'active' => true],
