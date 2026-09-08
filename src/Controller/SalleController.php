@@ -20,20 +20,20 @@ final class SalleController
     public function index(): void
     {
         $salles = $this->salles->lister();
-        require dirname(__DIR__,2). '/';
+        require dirname(__DIR__,2). '/templates/salle/index.php';
     }
 
     public function show(int $id): void
     {
         $salle = $this->salles->trouver($id);
-        require __DIR__ . '/../../templates/salle/show.php';
+        require dirname(__DIR__,2). '/templates/salle/show.php';
     }
 
     public function create(): void
     {
         $errors = [];
         $old = [];
-        require __DIR__ . '/../../templates/salle/form.php';
+        require dirname(__DIR__,2). '/templates/salle/form.php';
     }
 
     public function store(): void
@@ -48,7 +48,7 @@ final class SalleController
         if (!$resultat->isValid()) {
             $errors = $resultat->errors();
             $old = $data;
-            require __DIR__ . '/../../templates/salle/form.php';
+        require dirname(__DIR__,2). '/templates/salle/form.php';
             return;
         }
 
