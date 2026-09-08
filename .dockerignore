@@ -1,0 +1,10 @@
+.git
+.github
+vendor
+.env
+tests
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+CHANGELOG.md

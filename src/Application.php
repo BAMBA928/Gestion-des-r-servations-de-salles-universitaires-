@@ -49,7 +49,9 @@ final class Application
 
             case Dispatcher::FOUND:
                 [$class, $method] = $routeInfo[1];
-                $vars = $routeInfo[2];
+                $vars = array_map(static function ($value) {
+                    return is_numeric($value) ? (int) $value : $value;
+                }, $routeInfo[2]);
 
                 $controller = $this->container->get($class);
                 $controller->$method(...array_values($vars));
