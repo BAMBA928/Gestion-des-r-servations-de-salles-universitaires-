@@ -6,12 +6,12 @@
     <ul class="errors">
         <?php foreach ($errors as $champ => $messages): ?>
             <?php foreach ($messages as $message): ?>
-                <li><?= htmlspecialchars($champ) ?> : <?= htmlspecialchars($message) ?></li>
+                <li><strong><?= htmlspecialchars($champ) ?></strong> : <?= htmlspecialchars($message) ?></li>
             <?php endforeach; ?>
         <?php endforeach; ?>
     </ul>
 <?php endif; ?>
-<form method="post">
+<form method="post" action="/reservations" class="card-form">
     <label>Salle
         <select name="salle_id">
             <?php foreach ($salles as $salle): ?>

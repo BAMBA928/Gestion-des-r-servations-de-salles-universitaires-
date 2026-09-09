@@ -17,45 +17,46 @@ final class SalleController
     ) {
     }
 
+    private function afficher(string $vue, array $donnees = []): void
+    {
+        extract($donnees);
+
+        ob_start();
+        require __DIR__ . '/../../templates/' . $vue . '.php';
+        $content = ob_get_clean();
+
+        require __DIR__ . '/../../templates/layout/base.php';
+    }
+
     public function index(): void
     {
         $salles = $this->salles->lister();
-        require dirname(__DIR__,2). '/templates/salle/index.php';
+        $this->afficher('salle/index', ['salles' => $salles]);
     }
 
     public function show(int $id): void
     {
         $salle = $this->salles->trouver($id);
-        require dirname(__DIR__,2). '/templates/salle/show.php';
+        $this->afficher('salle/show', ['salle' => $salle]);
     }
 
     public function create(): void
     {
-        $errors = [];
-        $old = [];
-        require dirname(__DIR__,2). '/templates/salle/form.php';
+        $this->afficher('salle/form', ['errors' => [], 'old' => []]);
     }
 
     public function store(): void
     {
-        // 1. lire les données HTTP
         $data = $_POST;
-
-        // 2. appeler le validateur
         $resultat = $this->validator->validate($data);
 
-        // 3. réafficher le formulaire en cas d'erreur
         if (!$resultat->isValid()) {
-            $errors = $resultat->errors();
-            $old = $data;
-        require dirname(__DIR__,2). '/templates/salle/form.php';
+            $this->afficher('salle/form', ['errors' => $resultat->errors(), 'old' => $data]);
             return;
         }
 
-        // 4. construire le DTO
         $dto = CreerSalleDTO::depuisTableau($resultat->data());
 
-        // 5. appeler le service (ici, pas de service dédié imposé — on peut enregistrer via le repository)
         $salle = new Salle();
         $salle->nom = $dto->nom;
         $salle->batiment = $dto->batiment;
@@ -64,7 +65,6 @@ final class SalleController
         $salle->active = $dto->active;
         $this->salles->enregistrer($salle);
 
-        // 6. rediriger après succès
         header('Location: /salles/' . $salle->id);
         exit;
     }
@@ -72,9 +72,7 @@ final class SalleController
     public function edit(int $id): void
     {
         $salle = $this->salles->trouver($id);
-        $errors = [];
-        $old = [];
-        require __DIR__ . '/../../templates/salle/form.php';
+        $this->afficher('salle/form', ['salle' => $salle, 'errors' => [], 'old' => []]);
     }
 
     public function update(int $id): void
@@ -84,9 +82,7 @@ final class SalleController
 
         if (!$resultat->isValid()) {
             $salle = $this->salles->trouver($id);
-            $errors = $resultat->errors();
-            $old = $data;
-            require __DIR__ . '/../../templates/salle/form.php';
+            $this->afficher('salle/form', ['salle' => $salle, 'errors' => $resultat->errors(), 'old' => $data]);
             return;
         }
 

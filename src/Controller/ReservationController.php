@@ -24,6 +24,17 @@ final class ReservationController
     ) {
     }
 
+    private function afficher(string $vue, array $donnees = []): void
+    {
+        extract($donnees);
+
+        ob_start();
+        require __DIR__ . '/../../templates/' . $vue . '.php';
+        $content = ob_get_clean();
+
+        require __DIR__ . '/../../templates/layout/base.php';
+    }
+
     public function index(): void
     {
         $salleId = $_GET['salle_id'] ?? null;
@@ -32,55 +43,46 @@ final class ReservationController
             ? $this->reservations->listerParSalle((int) $salleId)
             : $this->reservations->lister();
 
-        require __DIR__ . '/../../templates/reservation/index.php';
+        $this->afficher('reservation/index', ['reservations' => $reservations]);
     }
 
     public function show(int $id): void
     {
         $reservation = $this->reservations->trouver($id);
-        require __DIR__ . '/../../templates/reservation/show.php';
+        $this->afficher('reservation/show', ['reservation' => $reservation]);
     }
 
     public function create(): void
     {
         $salles = $this->salles->lister();
-        $errors = [];
-        $old = [];
-        require __DIR__ . '/../../templates/reservation/form.php';
+        $this->afficher('reservation/form', ['salles' => $salles, 'errors' => [], 'old' => []]);
     }
 
     public function store(): void
     {
-        // 1. lire les données HTTP
         $data = $_POST;
-
-        // 2. appeler le validateur
         $resultat = $this->validator->validate($data);
 
-        // 3. réafficher le formulaire en cas d'erreur
         if (!$resultat->isValid()) {
             $salles = $this->salles->lister();
-            $errors = $resultat->errors();
-            $old = $data;
-            require __DIR__ . '/../../templates/reservation/form.php';
+            $this->afficher('reservation/form', ['salles' => $salles, 'errors' => $resultat->errors(), 'old' => $data]);
             return;
         }
 
-        // 4. construire le DTO
         $dto = CreerReservationDTO::depuisTableau($resultat->data());
 
-        // 5. appeler le service
         try {
             $reservation = $this->creerService->creer($dto);
         } catch (SalleIndisponibleException $e) {
             $salles = $this->salles->lister();
-            $errors = ['general' => [$e->getMessage()]];
-            $old = $data;
-            require __DIR__ . '/../../templates/reservation/form.php';
+            $this->afficher('reservation/form', [
+                'salles' => $salles,
+                'errors' => ['general' => [$e->getMessage()]],
+                'old' => $data,
+            ]);
             return;
         }
 
-        // 6. rediriger après succès
         header('Location: /reservations/' . $reservation->id);
         exit;
     }
@@ -91,7 +93,7 @@ final class ReservationController
             $this->annulerService->annuler($id);
         } catch (ReservationIntrouvableException $e) {
             http_response_code(404);
-            require __DIR__ . '/../../templates/error/404.php';
+            $this->afficher('error/404');
             return;
         }
 

@@ -6,11 +6,16 @@
     <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
-    <nav>
-        <a href="/salles">Salles</a>
-        <a href="/reservations">Réservations</a>
-    </nav>
-    <main>
+    <header class="topbar">
+        <div class="topbar-inner">
+            <span class="brand">🏫 Salles Universitaires</span>
+            <nav>
+                <a href="/salles">Salles</a>
+                <a href="/reservations">Réservations</a>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
         <?= $content ?? '' ?>
     </main>
 </body>
