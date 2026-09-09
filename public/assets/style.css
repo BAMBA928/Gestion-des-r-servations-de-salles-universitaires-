@@ -1,0 +1,246 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --success: #16a34a;
+    --success-bg: #f0fdf4;
+    --bg: #f4f5f9;
+    --card-bg: #ffffff;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --radius: 10px;
+}
+
+body {
+    font-family: "Segoe UI", -apple-system, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.topbar {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+}
+
+.topbar-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand {
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.topbar nav a {
+    color: #ffffffdd;
+    text-decoration: none;
+    margin-left: 1.5rem;
+    font-weight: 600;
+    padding: .4rem .8rem;
+    border-radius: 6px;
+    transition: background .15s ease;
+}
+
+.topbar nav a:hover {
+    background: rgba(255,255,255,.15);
+    color: #fff;
+}
+
+.container {
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+h1 {
+    font-size: 1.6rem;
+    margin-bottom: 1.25rem;
+    color: var(--text);
+}
+
+/* Listes (salles / réservations) */
+.card-list {
+    list-style: none;
+    display: grid;
+    gap: .75rem;
+}
+
+.card-list li {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.card-list li:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,.08);
+}
+
+.card-list a {
+    display: block;
+    padding: 1rem 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.card-list .meta {
+    display: block;
+    font-weight: 400;
+    color: var(--muted);
+    font-size: .9rem;
+    margin-top: .2rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: .15rem .6rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 700;
+    margin-left: .5rem;
+}
+
+.badge.confirmee { background: var(--success-bg); color: var(--success); }
+.badge.annulee { background: var(--danger-bg); color: var(--danger); }
+.badge.active { background: var(--success-bg); color: var(--success); }
+.badge.inactive { background: var(--danger-bg); color: var(--danger); }
+
+.btn-add {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: .6rem 1.2rem;
+    background: var(--primary);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: var(--radius);
+    transition: background .15s ease;
+}
+
+.btn-add:hover { background: var(--primary-dark); }
+
+/* Fiche détail */
+.detail-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+}
+
+.detail-card p {
+    margin-bottom: .5rem;
+    color: var(--muted);
+}
+
+.detail-card p strong { color: var(--text); }
+
+.detail-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    gap: .75rem;
+}
+
+/* Erreurs de validation */
+.errors {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid #fecaca;
+    padding: .9rem 1.1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1.25rem;
+    list-style: none;
+}
+
+.errors li { margin-bottom: .25rem; }
+.errors li:last-child { margin-bottom: 0; }
+
+/* Formulaires */
+form.card-form {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.75rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    max-width: 480px;
+}
+
+form.card-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 1.1rem;
+    font-size: .9rem;
+    color: var(--text);
+}
+
+form.card-form input,
+form.card-form select,
+form.card-form textarea {
+    display: block;
+    width: 100%;
+    margin-top: .4rem;
+    padding: .55rem .7rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: .95rem;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+form.card-form input:focus,
+form.card-form select:focus,
+form.card-form textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,.15);
+}
+
+form.card-form textarea { min-height: 80px; resize: vertical; }
+
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+.checkbox-row input { width: auto; margin: 0; }
+
+button, .btn {
+    padding: .6rem 1.3rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: background .15s ease;
+}
+
+button:hover, .btn:hover { background: var(--primary-dark); }
+
+button.btn-danger { background: var(--danger); }
+button.btn-danger:hover { background: #b91c1c; }
+
+.empty-state {
+    text-align: center;
+    color: var(--muted);
+    padding: 2.5rem 1rem;
+    background: var(--card-bg);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+}
