@@ -12,7 +12,6 @@ $builder = new ContainerBuilder();
 $builder->addDefinitions(dirname(__DIR__) . '/config/container.php');
 $container = $builder->build();
 
-// Force le démarrage d'Eloquent AVANT de traiter la requête
 $container->get(Capsule::class);
 
 $application = $container->get(Application::class);

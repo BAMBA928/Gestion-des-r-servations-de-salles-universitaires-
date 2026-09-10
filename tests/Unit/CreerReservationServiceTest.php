@@ -16,14 +16,15 @@ final class CreerReservationServiceTest extends TestCase
     private InMemorySalleRepository $salles;
     private InMemoryReservationRepository $reservations;
     private CreerReservationService $service;
+    private array $Exceptions;
 
     protected function setUp(): void
     {
-        parent::setUp();  // <-- démarre Eloquent via la classe de base
+        parent::setUp(); 
 
         $this->salles = new InMemorySalleRepository();
         $this->reservations = new InMemoryReservationRepository();
-        $this->service = new CreerReservationService($this->salles, $this->reservations);
+        $this->service = new CreerReservationService($this->salles, $this->reservations,$this->Exceptions);
     }
 
     private function creerSalleActive(int $id = 1): Salle
@@ -148,7 +149,6 @@ final class CreerReservationServiceTest extends TestCase
     {
         $this->creerSalleActive();
 
-        // réservation existante 10h -> 12h
         $premiereDto = CreerReservationDTO::depuisTableau([
             'salle_id' => 1,
             'responsable' => 'Premier',
@@ -159,7 +159,6 @@ final class CreerReservationServiceTest extends TestCase
         ]);
         $this->service->creer($premiereDto);
 
-        // nouvelle demande 11h -> 13h -> chevauchement
         $dtoConflit = CreerReservationDTO::depuisTableau([
             'salle_id' => 1,
             'responsable' => 'Second',
@@ -177,7 +176,6 @@ final class CreerReservationServiceTest extends TestCase
     {
         $this->creerSalleActive();
 
-        // réservation existante 10h -> 12h
         $premiereDto = CreerReservationDTO::depuisTableau([
             'salle_id' => 1,
             'responsable' => 'Premier',
@@ -188,7 +186,6 @@ final class CreerReservationServiceTest extends TestCase
         ]);
         $this->service->creer($premiereDto);
 
-        // nouvelle demande 12h -> 14h -> pas de chevauchement (voisine)
         $dtoVoisin = CreerReservationDTO::depuisTableau([
             'salle_id' => 1,
             'responsable' => 'Second',

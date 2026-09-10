@@ -53,7 +53,6 @@ final class SalleController extends AbstractController
         $salle->type = $dto->type;
         $salle->active = $dto->active;
         $this->salles->enregistrer($salle);
-
         $this->rediriger('/salles/' . $salle->id);
     }
 

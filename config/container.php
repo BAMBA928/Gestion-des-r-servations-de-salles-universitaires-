@@ -15,14 +15,23 @@ use App\Service\AnnulerReservationService;
 use App\Service\CreerReservationService;
 use App\Validation\ReservationValidator;
 use App\Validation\SalleValidator;
-use Dotenv\Dotenv;
+use App\Service\SalleActive;
+use App\Service\DateOrdre;
+use App\Service\DureeMaximale;
+use App\Service\DateFuture;
+use App\Service\Conflit;
+
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+
+
+
 use function DI\autowire;
 use function DI\factory;
 use function FastRoute\simpleDispatcher;
+use function DI\get;
 
 return [
     SalleRepositoryInterface::class => autowire(EloquentSalleRepository::class),
@@ -30,7 +39,19 @@ return [
 
     SalleValidator::class => autowire(),
     ReservationValidator::class => autowire(),
-    CreerReservationService::class => autowire(),
+    
+    'Exceptions' => [
+
+        autowire(SalleActive::class),
+        autowire(DateOrdre::class),
+        autowire(DureeMaximale::class),
+        autowire(DateFuture::class),
+        autowire(Conflit::class),
+    ],
+
+    CreerReservationService::class => autowire()
+        ->constructorParameter('Exceptions', get('Exceptions')),
+
     AnnulerReservationService::class => autowire(),
     SalleController::class => autowire(),
     ReservationController::class => autowire(),
@@ -38,28 +59,9 @@ return [
     MigrateCommand::class => autowire(),
     SeedCommand::class => autowire(),
 
-    // Objets nécessitant une configuration -> factories
-    Capsule::class => factory(function (): Capsule {
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__));
-        $dotenv->load();
-
-        $capsule = new Capsule();
-        $capsule->addConnection([
-            'driver'    => $_ENV['DB_DRIVER'],
-            'host'      => $_ENV['DB_HOST'],
-            'port'      => $_ENV['DB_PORT'],
-            'database'  => $_ENV['DB_DATABASE'],
-            'username'  => $_ENV['DB_USERNAME'],
-            'password'  => $_ENV['DB_PASSWORD'],
-            'charset'   => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-        ]);
-        $capsule->setAsGlobal();
-        $capsule->bootEloquent();
-
-        return $capsule;
-    }),
-
+    Capsule::class => factory(
+        require __DIR__ . '/capsule.php'
+    ),
     Dispatcher::class => factory(function (): Dispatcher {
         return simpleDispatcher(function (RouteCollector $r) {
             (require dirname(__DIR__) . '/routes/web.php')($r);
