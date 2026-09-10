@@ -9,23 +9,12 @@ use App\Repository\SalleRepositoryInterface;
 use App\Validation\SalleValidator;
 use App\Model\Salle;
 
-final class SalleController
+final class SalleController extends AbstractController
 {
     public function __construct(
         private SalleRepositoryInterface $salles,
         private SalleValidator $validator,
     ) {
-    }
-
-    private function afficher(string $vue, array $donnees = []): void
-    {
-        extract($donnees);
-
-        ob_start();
-        require __DIR__ . '/../../templates/' . $vue . '.php';
-        $content = ob_get_clean();
-
-        require __DIR__ . '/../../templates/layout/base.php';
     }
 
     public function index(): void
@@ -65,8 +54,7 @@ final class SalleController
         $salle->active = $dto->active;
         $this->salles->enregistrer($salle);
 
-        header('Location: /salles/' . $salle->id);
-        exit;
+        $this->rediriger('/salles/' . $salle->id);
     }
 
     public function edit(int $id): void
@@ -94,7 +82,6 @@ final class SalleController
         $salle->active = (bool) $data['active'];
         $this->salles->enregistrer($salle);
 
-        header('Location: /salles/' . $salle->id);
-        exit;
+        $this->rediriger('/salles/' . $salle->id);
     }
 }

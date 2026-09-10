@@ -13,7 +13,7 @@ use App\Service\AnnulerReservationService;
 use App\Service\CreerReservationService;
 use App\Validation\ReservationValidator;
 
-final class ReservationController
+final class ReservationController extends AbstractController
 {
     public function __construct(
         private ReservationRepositoryInterface $reservations,
@@ -22,17 +22,6 @@ final class ReservationController
         private CreerReservationService $creerService,
         private AnnulerReservationService $annulerService,
     ) {
-    }
-
-    private function afficher(string $vue, array $donnees = []): void
-    {
-        extract($donnees);
-
-        ob_start();
-        require __DIR__ . '/../../templates/' . $vue . '.php';
-        $content = ob_get_clean();
-
-        require __DIR__ . '/../../templates/layout/base.php';
     }
 
     public function index(): void
@@ -56,7 +45,7 @@ final class ReservationController
     {
         $salles = $this->salles->lister();
         $this->afficher('reservation/form', ['salles' => $salles, 'errors' => [], 'old' => []]);
-    }
+    }   
 
     public function store(): void
     {
@@ -83,8 +72,7 @@ final class ReservationController
             return;
         }
 
-        header('Location: /reservations/' . $reservation->id);
-        exit;
+        $this->rediriger('/reservations/' . $reservation->id);
     }
 
     public function cancel(int $id): void
@@ -97,7 +85,6 @@ final class ReservationController
             return;
         }
 
-        header('Location: /reservations');
-        exit;
+        $this->rediriger('/reservations');
     }
 }
