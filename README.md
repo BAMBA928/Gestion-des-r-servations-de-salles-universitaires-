@@ -7,8 +7,9 @@ Application web permettant de consulter les salles universitaires et de gérer l
 - PHP 8.2 ou 8.3, avec les extensions : `pdo_mysql`, `dom`, `sqlite3` (pour les tests)
 - MySQL
 - Composer
+- Docker et Docker Compose (optionnel, pour un lancement conteneurisé)
 
-## Installation
+## Installation classique (sans Docker)
 
 ### 1. Cloner le dépôt
 
@@ -30,6 +31,7 @@ cp .env.example .env
 ```
 
 Modifiez `.env` avec vos informations de connexion MySQL :
+
 APP_ENV=development
 APP_DEBUG=true
 DB_DRIVER=mysql
@@ -60,13 +62,74 @@ php bin/bamba bamba:seed
 
 Ce script insère 5 salles de départ (Amphithéâtre A, Salle B12, Laboratoire Chimie, Salle Informatique 1, Salle de réunion). Il peut être exécuté plusieurs fois sans créer de doublons.
 
-## Lancer le serveur
+### 7. Lancer le serveur
 
 ```bash
 php -S localhost:8000 -t public
 ```
 
 L'application est accessible sur `http://localhost:8000`.
+
+---
+
+## Lancement avec Docker
+
+### 1. Configurer les secrets
+
+```bash
+cp .env.docker.exemple .env.docker
+```
+
+Modifiez `.env.docker` avec vos propres valeurs (ce fichier n'est **jamais versionné**, voir `.gitignore`) :
+
+MYSQL_ROOT_PASSWORD=votre_mot_de_passe
+MYSQL_DATABASE=reservation_salles
+DB_USERNAME=root
+DB_PASSWORD=votre_mot_de_passe
+
+
+### 2. Démarrer les conteneurs
+
+⚠️ Le fichier de secrets s'appelle `.env.docker` (et non `.env`), il faut donc **toujours préciser `--env-file`** :
+
+```bash
+docker compose --env-file .env.docker up --build -d
+```
+
+### 3. Vérifier que tout est démarré
+
+```bash
+docker compose ps
+```
+
+Les deux services (`app` et `db`) doivent apparaître avec le statut `Up` (et `db` idéalement `healthy`).
+
+### 4. Exécuter les migrations et le seed dans le conteneur
+
+```bash
+docker compose exec app php bin/bamba bamba:migrate
+docker compose exec app php bin/bamba bamba:seed
+```
+
+### 5. Accéder à l'application
+
+http://localhost:8000
+
+
+### Commandes utiles
+
+| Commande | Description |
+|---|---|
+| `docker compose --env-file .env.docker up --build -d` | Démarre les conteneurs (reconstruit l'image si besoin) |
+| `docker compose ps` | Liste l'état des conteneurs |
+| `docker compose logs app` / `logs db` | Affiche les logs d'un service |
+| `docker compose exec app <commande>` | Exécute une commande dans le conteneur `app` |
+| `docker compose down` | Arrête les conteneurs (garde les données) |
+| `docker compose down -v` | Arrête les conteneurs et supprime les données de la base |
+
+Voir `DOCKER.md` pour le détail de chaque ligne du `Dockerfile` et du `docker-compose.yml`.
+
+---
 
 ## Exécuter les tests
 
@@ -76,7 +139,7 @@ vendor/bin/phpunit
 
 Les tests unitaires (`tests/Unit`) utilisent des repositories en mémoire et ne nécessitent pas MySQL. Les tests d'intégration (`tests/Integration`) utilisent une base SQLite en mémoire.
 
-## Commandes disponibles
+## Commandes disponibles (`bin/bamba`)
 
 | Commande | Description |
 |---|---|
@@ -85,7 +148,7 @@ Les tests unitaires (`tests/Unit`) utilisent des repositories en mémoire et ne 
 
 ## Structure du projet
 
-Voir `ARCHITECTURE.md` pour le détail des choix architecturaux (MVC, injection de dépendances, Repository, DTO, etc.).
+Voir `ARCHITECTURE.md` pour le détail des choix architecturaux (MVC, injection de dépendances, Repository, DTO, etc.) et `DOCKER.md` pour la dockerisation.
 
 ## Fonctionnalités
 
