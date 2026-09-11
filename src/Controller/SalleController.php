@@ -8,18 +8,21 @@ use App\DTO\CreerSalleDTO;
 use App\Repository\SalleRepositoryInterface;
 use App\Validation\SalleValidator;
 use App\Model\Salle;
-
+use App\render\RenderView;
 final class SalleController extends AbstractController
 {
-    public function __construct(
+     public function __construct(
         private SalleRepositoryInterface $salles,
         private SalleValidator $validator,
+        RenderView $RenderView,
     ) {
+        parent::__construct($RenderView);
     }
 
     public function index(): void
     {
-        $salles = $this->salles->lister();
+        $page = (int) ($_GET['page'] ?? 1);
+        $salles = $this->salles->listerPagine($page, 4);
         $this->afficher('salle/index', ['salles' => $salles]);
     }
 

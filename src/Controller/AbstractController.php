@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\render\RenderView;
+
 abstract class AbstractController
 {
+    public function __construct(
+        private RenderView $rendererResolver,
+    ) {
+    }
+
     protected function afficher(string $vue, array $donnees = []): void
     {
-        extract($donnees);
-
-        ob_start();
-        require __DIR__ . '/../../templates/' . $vue . '.php';
-        $content = ob_get_clean();
-
-        require __DIR__ . '/../../templates/layout/base.php';
+        $this->rendererResolver->resoudre()->rendre($vue, $donnees);
     }
 
     protected function rediriger(string $url): void
     {
-        header('Location: ' . $url);
-        exit;
+        $this->rendererResolver->resoudre()->rendreRedirection($url);
     }
 }

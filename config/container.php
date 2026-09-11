@@ -26,7 +26,10 @@ use FastRoute\RouteCollector;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 
-
+use App\render\HtmlRenderer;
+use App\render\JsonRenderer;
+use App\render\RenderView;
+use function DI\create;
 
 use function DI\autowire;
 use function DI\factory;
@@ -39,7 +42,7 @@ return [
 
     SalleValidator::class => autowire(),
     ReservationValidator::class => autowire(),
-    
+
     'Exceptions' => [
 
         autowire(SalleActive::class),
@@ -53,6 +56,10 @@ return [
         ->constructorParameter('Exceptions', get('Exceptions')),
 
     AnnulerReservationService::class => autowire(),
+
+    HtmlRenderer::class => autowire(),
+    JsonRenderer::class => autowire(),
+    RenderView::class => create()->constructor(get(HtmlRenderer::class), get(JsonRenderer::class)),
     SalleController::class => autowire(),
     ReservationController::class => autowire(),
     Application::class => autowire(),

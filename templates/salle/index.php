@@ -1,7 +1,6 @@
 
-<?php $salles = $salles ?? [] ?>
 <h1>Liste des salles</h1>
-<?php if (empty($salles)): ?>
+<?php if ($salles->isEmpty()): ?>
     <div class="empty-state">Aucune salle enregistrée pour le moment.</div>
 <?php else: ?>
     <ul class="card-list">
@@ -17,5 +16,15 @@
             </li>
         <?php endforeach; ?>
     </ul>
+
+    <nav class="pagination">
+        <?php if ($salles->currentPage() > 1): ?>
+            <a href="?page=<?= $salles->currentPage() - 1 ?>">&laquo; Précédent</a>
+        <?php endif; ?>
+        <span>Page <?= $salles->currentPage() ?> / <?= $salles->lastPage() ?></span>
+        <?php if ($salles->hasMorePages()): ?>
+            <a href="?page=<?= $salles->currentPage() + 1 ?>">Suivant &raquo;</a>
+        <?php endif; ?>
+    </nav>
 <?php endif; ?>
 <a href="/salles/create" class="btn-add">+ Ajouter une salle</a>

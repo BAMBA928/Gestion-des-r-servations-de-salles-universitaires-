@@ -16,7 +16,7 @@ services:
       - .env.docker
     environment:
       DB_HOST: db
-      DB_PORT: 3306
+      DB_PORT: "3306"
       DB_DATABASE: ${MYSQL_DATABASE}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -29,8 +29,6 @@ services:
       - .env.docker
     environment:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
-    ports:
-      - "3306:3306"
     volumes:
       - db-data:/var/lib/mysql
     healthcheck:

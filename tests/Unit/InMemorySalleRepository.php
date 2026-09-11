@@ -7,6 +7,8 @@ namespace Tests\Unit;
 use App\Model\Salle;
 use App\Repository\SalleRepositoryInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 final class InMemorySalleRepository implements SalleRepositoryInterface
 {
@@ -33,4 +35,8 @@ final class InMemorySalleRepository implements SalleRepositoryInterface
 
         return $salle;
     }
+    public function listerPagine(int $page, int $parPage): LengthAwarePaginator
+{
+    return Salle::paginate($parPage, ['*'], 'page', $page);
+}
 }
