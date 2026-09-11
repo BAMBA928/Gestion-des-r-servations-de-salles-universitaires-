@@ -2,3 +2,4 @@
 /vendor/
 .env
 not.md
+.env.docker
