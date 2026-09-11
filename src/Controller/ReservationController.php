@@ -12,6 +12,8 @@ use App\Repository\SalleRepositoryInterface;
 use App\Service\AnnulerReservationService;
 use App\Service\CreerReservationService;
 use App\Validation\ReservationValidator;
+use App\render\RenderView;
+
 
 final class ReservationController extends AbstractController
 {
@@ -21,16 +23,20 @@ final class ReservationController extends AbstractController
         private ReservationValidator $validator,
         private CreerReservationService $creerService,
         private AnnulerReservationService $annulerService,
+
+        RenderView $RenderView,
     ) {
+        parent::__construct($RenderView);
     }
 
     public function index(): void
     {
+        $page = (int) ($_GET['page'] ?? 1);
         $salleId = $_GET['salle_id'] ?? null;
 
         $reservations = $salleId !== null
             ? $this->reservations->listerParSalle((int) $salleId)
-            : $this->reservations->lister();
+            : $this->reservations->listerPagine($page, 4);
 
         $this->afficher('reservation/index', ['reservations' => $reservations]);
     }
@@ -45,7 +51,7 @@ final class ReservationController extends AbstractController
     {
         $salles = $this->salles->lister();
         $this->afficher('reservation/form', ['salles' => $salles, 'errors' => [], 'old' => []]);
-    }   
+    }
 
     public function store(): void
     {

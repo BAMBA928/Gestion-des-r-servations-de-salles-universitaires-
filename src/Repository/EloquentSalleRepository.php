@@ -6,6 +6,8 @@ namespace App\Repository;
 
 use App\Model\Salle;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 final class EloquentSalleRepository implements SalleRepositoryInterface
 {
@@ -25,4 +27,9 @@ final class EloquentSalleRepository implements SalleRepositoryInterface
 
         return $salle;
     }
+
+public function listerPagine(int $page, int $parPage): LengthAwarePaginator
+{
+    return Salle::paginate($parPage, ['*'], 'page', $page);
+}
 }

@@ -7,6 +7,7 @@ namespace App\Repository;
 use App\Model\Reservation;
 use DateTimeImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 final class EloquentReservationRepository implements ReservationRepositoryInterface
 {
@@ -48,4 +49,9 @@ final class EloquentReservationRepository implements ReservationRepositoryInterf
 
         return $reservation;
     }
+
+    public function listerPagine(int $page, int $parPage): LengthAwarePaginator
+{
+    return Reservation::paginate($parPage, ['*'], 'page', $page);
+}
 }

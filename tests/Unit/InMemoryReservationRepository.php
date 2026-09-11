@@ -8,6 +8,8 @@ use App\Model\Reservation;
 use App\Repository\ReservationRepositoryInterface;
 use DateTimeImmutable;
 use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 final class InMemoryReservationRepository implements ReservationRepositoryInterface
 {
@@ -64,4 +66,13 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
 
         return $this->enregistrer($reservation);
     }
+public function listerPagine(int $page, int $parPage): LengthAwarePaginator
+{
+    $tous = array_values($this->reservations);
+    $total = count($tous);
+    $offset = ($page - 1) * $parPage;
+    $items = array_slice($tous, $offset, $parPage);
+
+    return new LengthAwarePaginator($items, $total, $parPage, $page);
+}
 }
