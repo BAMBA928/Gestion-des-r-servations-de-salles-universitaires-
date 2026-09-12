@@ -1,4 +1,4 @@
-FROM php:8.3-fpm    
+FROM php:8.3-fpm
 
 WORKDIR /var/www/html
 
@@ -20,7 +20,6 @@ COPY . .
 
 RUN chown -R www-data:www-data /var/www/html
 
-EXPOSE 9000
 EXPOSE 8000
 
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+CMD php -S 0.0.0.0:${PORT:-8000} -t public
