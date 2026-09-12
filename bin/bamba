@@ -13,8 +13,8 @@ $builder->addDefinitions(dirname(__DIR__) . '/config/container.php');
 $container = $builder->build();
 $container->get(Capsule::class);
 $commandes = [
-    'migrate' => \App\Console\MigrateCommand::class,
-    'seed'    => \App\Console\SeedCommand::class,
+    'bamba:migrate' => \App\Console\MigrateCommand::class,
+    'bamba:seed'    => \App\Console\SeedCommand::class,
 ];
 
 $nomCommande = $argv[1] ?? null;
