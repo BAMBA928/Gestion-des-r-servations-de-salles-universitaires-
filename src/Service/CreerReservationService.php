@@ -16,7 +16,7 @@ final class CreerReservationService
     public function __construct(
         private SalleRepositoryInterface $salles,
         private ReservationRepositoryInterface $reservations,
-        private array $Exceptions
+        private array $regles
 
     ) {
     }
@@ -28,8 +28,8 @@ final class CreerReservationService
             throw new SalleIndisponibleException("La salle n'existe pas.");
         }
 
-        foreach ($this->Exceptions as $Exception) {
-            $Exception->verifier($dto, $salle, $this->reservations);
+        foreach ($this->regles as $regle) {
+            $regle->verifier($dto, $salle, $this->reservations);
         }
 
 
