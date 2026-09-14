@@ -8,7 +8,7 @@ use App\Exception\ReservationIntrouvableException;
 use App\Model\Reservation;
 use App\Repository\ReservationRepositoryInterface;
 
-final class AnnulerReservationService
+final class AnnulerReservationService implements AnnulerReservationServiceInterface
 {
     public function __construct(
         private ReservationRepositoryInterface $reservations,
